@@ -1,0 +1,7 @@
+{
+  "name": "miniflux-ui",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
