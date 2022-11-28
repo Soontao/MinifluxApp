@@ -101,6 +101,17 @@ class Home extends React.Component<IHomeProps, IHomeState> {
       </IonCard>
     );
 
+    if (index === 0) {
+      return (
+        <div>
+          <IonRefresher slot="fixed" onIonRefresh={this._onRefresh.bind(this)}>
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
+          {card}
+        </div>
+      );
+    }
+
     return card;
   }
 
@@ -119,9 +130,6 @@ class Home extends React.Component<IHomeProps, IHomeState> {
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
-          <IonRefresher slot="fixed" onIonRefresh={this._onRefresh.bind(this)}>
-            <IonRefresherContent></IonRefresherContent>
-          </IonRefresher>
           <Virtuoso
             style={{ height: "100%" }}
             totalCount={this.state.entryCount}
