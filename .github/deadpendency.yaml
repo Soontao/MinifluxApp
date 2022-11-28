@@ -1,0 +1,3 @@
+ignore-failures:
+    javascript:
+      - redux-persist
