@@ -32,7 +32,7 @@
     "react-virtuoso": "^3.1.5",
     "redux-persist": "^6.0.0",
     "typescript": "^4.1.3",
-    "web-vitals": "^0.2.4",
+    "web-vitals": "^3.0.0",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",
     "workbox-cacheable-response": "^5.1.4",
