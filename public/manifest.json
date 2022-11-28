@@ -1,6 +1,6 @@
 {
-  "short_name": "Ionic App",
-  "name": "My Ionic App",
+  "short_name": "Miniflux App",
+  "name": "Miniflux App",
   "icons": [
     {
       "src": "assets/icon/favicon.png",
