@@ -51,7 +51,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
 
   async _appendEntries(replace = false) {
     const options: GetEntriesOptions = {
-      limit: 10,
+      limit: 15,
       status: "unread",
       direction: "desc",
     };
@@ -86,7 +86,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
   }
 
   private _buildCard(index: number, entry: Entry) {
-    return (
+    const card = (
       <IonCard
         onClick={(e) => {
           e.preventDefault();
@@ -100,6 +100,8 @@ class Home extends React.Component<IHomeProps, IHomeState> {
         </IonCardHeader>
       </IonCard>
     );
+
+    return card;
   }
 
   _onRefresh(event: CustomEvent<RefresherEventDetail>) {
@@ -111,7 +113,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
   public render() {
     return (
       <IonPage>
-        <IonHeader>
+        <IonHeader translucent>
           <IonToolbar>
             <IonTitle>Miniflux</IonTitle>
           </IonToolbar>
