@@ -1,26 +1,23 @@
 import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardHeader,
+  IonCard, IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
   IonHeader,
   IonPage,
   IonTitle,
-  IonToolbar,
+  IonToolbar
 } from "@ionic/react";
 import { Virtuoso } from "react-virtuoso";
 import { MinifluxClient } from "../api";
 import { Entry, GetEntriesOptions } from "../api/miniflux";
-import { appConnect } from "../store";
-import brokenImage from "../../public/assets/broken-1.png";
+import store, { appConnect } from "../store";
 
 import * as React from "react";
-import { getImageLink } from "../utils/getImageLink";
+import { RouteComponentProps } from "react-router";
+import { fillContent } from "../store/features/content";
 
-export interface IHomeProps {
+export interface IHomeProps extends RouteComponentProps {
   credential: {
     url: string;
     token: string;
@@ -65,6 +62,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
 
   private async _loadMore() {
     if (this.state.entries.length > 0) {
+      // TODO: send toast tell user those has been marked as read
       const entry_ids = this.state.entries
         .map((item) => item?.id)
         .filter((id) => id !== undefined) as any as Array<number>;
@@ -78,15 +76,17 @@ class Home extends React.Component<IHomeProps, IHomeState> {
 
   private _buildCard(index: number, entry: Entry) {
     return (
-      <IonCard>
+      <IonCard
+        onClick={(e) => {
+          e.preventDefault();
+          store.dispatch(fillContent({ entry }));
+          this.props.history.push("/content");
+        }}
+      >
         <IonCardHeader>
           <IonCardTitle>{entry.title}</IonCardTitle>
           <IonCardSubtitle>{entry.author}</IonCardSubtitle>
         </IonCardHeader>
-        <IonButtons>
-          <IonButton fill="clear">Open</IonButton>
-          <IonButton fill="clear">Save</IonButton>
-        </IonButtons>
       </IonCard>
     );
   }
