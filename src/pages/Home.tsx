@@ -1,12 +1,16 @@
 import {
-  IonCard, IonCardHeader,
+  IonCard,
+  IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
   IonHeader,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonTitle,
-  IonToolbar
+  IonToolbar,
+  RefresherEventDetail,
 } from "@ionic/react";
 import { Virtuoso } from "react-virtuoso";
 import { MinifluxClient } from "../api";
@@ -45,18 +49,25 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     this._loadMore();
   }
 
-  async _appendEntries() {
+  async _appendEntries(replace = false) {
     const options: GetEntriesOptions = {
       limit: 10,
       status: "unread",
       direction: "desc",
     };
-    if (this.state.entries.length > 0) {
+
+    if (replace === false && this.state.entries.length > 0) {
       options.before_entry_id =
         this.state.entries[this.state.entries.length - 1].id;
     }
+
     const data = await this._client.entires(options);
-    const entries = [...this.state.entries, ...data.entries];
+
+    const entries =
+      replace === true
+        ? data.entries
+        : [...this.state.entries, ...data.entries];
+
     this.setState({ entries, entryCount: data.total });
   }
 
@@ -91,6 +102,12 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     );
   }
 
+  _onRefresh(event: CustomEvent<RefresherEventDetail>) {
+    this._appendEntries(true).finally(() => {
+      event.detail.complete();
+    });
+  }
+
   public render() {
     return (
       <IonPage>
@@ -100,6 +117,9 @@ class Home extends React.Component<IHomeProps, IHomeState> {
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
+          <IonRefresher slot="fixed" onIonRefresh={this._onRefresh.bind(this)}>
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
           <Virtuoso
             style={{ height: "100%" }}
             totalCount={this.state.entryCount}

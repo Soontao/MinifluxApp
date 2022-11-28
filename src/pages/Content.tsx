@@ -31,7 +31,10 @@ class Content extends React.Component<IContentProps, IContentState> {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-          <div dangerouslySetInnerHTML={{ __html: this.props.entry.content }} />
+          <div
+            style={{ fontSize: "22px" }}
+            dangerouslySetInnerHTML={{ __html: this.props.entry.content }}
+          />
         </IonContent>
       </IonPage>
     );
