@@ -45,7 +45,7 @@ class Content extends React.Component<IContentProps, IContentState> {
             <IonTitle>{this.props.entry.title}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">
+        <IonContent fullscreen className="ion-padding">
           <div
             style={{ fontSize: "22px" }}
             dangerouslySetInnerHTML={{ __html: this.props.entry.content }}

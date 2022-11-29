@@ -98,13 +98,13 @@ class Home extends React.Component<IHomeProps, IHomeState> {
           this.props.history.push("/content");
         }}
       >
+        <IonImg
+          src={getImageLink(entry.content)}
+          onIonError={(e) => {
+            e.target.remove();
+          }}
+        ></IonImg>
         <IonCardHeader>
-          <IonImg
-            src={getImageLink(entry.content)}
-            onIonError={(e) => {
-              e.target.remove();
-            }}
-          ></IonImg>
           <IonCardTitle>{entry.title}</IonCardTitle>
           <IonCardSubtitle>{entry.author}</IonCardSubtitle>
         </IonCardHeader>
