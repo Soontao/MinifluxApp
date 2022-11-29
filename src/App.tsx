@@ -1,5 +1,5 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
+import { IonReactHashRouter, IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 import Home from "./pages/Home";
 
@@ -39,7 +39,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <IonApp>
-          <IonReactRouter>
+          <IonReactHashRouter>
             <IonRouterOutlet>
               <PrivateRoute
                 exact
@@ -57,7 +57,7 @@ const App: React.FC = () => {
                 <Redirect to="/home" />
               </Route>
             </IonRouterOutlet>
-          </IonReactRouter>
+          </IonReactHashRouter>
         </IonApp>
       </PersistGate>
     </Provider>

@@ -9,7 +9,7 @@ import thunk from 'redux-thunk'
 
 
 const persistedReducer = persistReducer(
-  { key: "miniflux-ui storage", storage, timeout: 50, }, // REVISIT: maybe the timeout will cause data lost
+  { key: "miniflux-ui storage", storage, timeout: 150, }, // REVISIT: maybe the timeout will cause data lost
   combineReducers({ userReducer, contentReducer })
 );
 

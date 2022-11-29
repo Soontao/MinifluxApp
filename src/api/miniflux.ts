@@ -137,4 +137,13 @@ export class MinifluxClient {
     await this._client.put("/v1/entries", options)
   }
 
+  /**
+   * Toggle Entry Bookmark
+   *      
+   * https://miniflux.app/docs/api.html#endpoint-toggle-bookmark
+   */
+  public async toggleBookmark(entryId: number) {
+    await this._client.put(`/v1/entries/${entryId}/bookmark`)
+  }
+
 }

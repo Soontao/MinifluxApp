@@ -5,6 +5,10 @@ import {
   IonCardTitle,
   IonContent,
   IonHeader,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  IonItem,
+  IonList,
   IonPage,
   IonRefresher,
   IonRefresherContent,
@@ -12,7 +16,6 @@ import {
   IonToolbar,
   RefresherEventDetail,
 } from "@ionic/react";
-import { Virtuoso } from "react-virtuoso";
 import { MinifluxClient } from "../api";
 import { Entry, GetEntriesOptions } from "../api/miniflux";
 import store, { appConnect } from "../store";
@@ -62,11 +65,12 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     }
 
     const data = await this._client.entires(options);
-
+    const newEntries = data.entries.map((item) => ({
+      ...item,
+      __marked__: false,
+    }));
     const entries =
-      replace === true
-        ? data.entries
-        : [...this.state.entries, ...data.entries];
+      replace === true ? newEntries : [...this.state.entries, ...newEntries];
 
     this.setState({ entries, entryCount: data.total });
   }
@@ -75,19 +79,21 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     if (this.state.entries.length > 0) {
       // TODO: send toast tell user those has been marked as read
       const entry_ids = this.state.entries
-        .map((item) => item?.id)
+        .filter((item) => (item as any).__marked__ !== true)
+        .map((item) => {
+          (item as any).__marked__ = true;
+          return item?.id;
+        })
         .filter((id) => id !== undefined) as any as Array<number>;
-      await this._client.update({
-        entry_ids,
-        status: "read",
-      });
+      await this._client.update({ entry_ids, status: "read" });
     }
     await this._appendEntries();
   }
 
   private _buildCard(index: number, entry: Entry) {
-    const card = (
+    return (
       <IonCard
+        key={entry.id}
         onClick={(e) => {
           e.preventDefault();
           store.dispatch(fillContent({ entry }));
@@ -100,22 +106,9 @@ class Home extends React.Component<IHomeProps, IHomeState> {
         </IonCardHeader>
       </IonCard>
     );
-
-    if (index === 0) {
-      return (
-        <div>
-          <IonRefresher slot="fixed" onIonRefresh={this._onRefresh.bind(this)}>
-            <IonRefresherContent></IonRefresherContent>
-          </IonRefresher>
-          {card}
-        </div>
-      );
-    }
-
-    return card;
   }
 
-  _onRefresh(event: CustomEvent<RefresherEventDetail>) {
+  private _onRefresh(event: CustomEvent<RefresherEventDetail>) {
     this._appendEntries(true).finally(() => {
       event.detail.complete();
     });
@@ -130,13 +123,26 @@ class Home extends React.Component<IHomeProps, IHomeState> {
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
-          <Virtuoso
-            style={{ height: "100%" }}
-            totalCount={this.state.entryCount}
-            data={this.state.entries}
-            itemContent={this._buildCard.bind(this)}
-            endReached={this._loadMore.bind(this)}
-          ></Virtuoso>
+          <IonRefresher slot="fixed" onIonRefresh={this._onRefresh.bind(this)}>
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
+          <IonHeader collapse="condense">
+            <IonToolbar>
+              <IonTitle size="large">Miniflux</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+          <IonList>
+            {this.state.entries.map((entry, index) =>
+              this._buildCard(index, entry)
+            )}
+          </IonList>
+          <IonInfiniteScroll
+            onIonInfinite={(ev) => {
+              this._loadMore().finally(() => ev.target.complete());
+            }}
+          >
+            <IonInfiniteScrollContent></IonInfiniteScrollContent>
+          </IonInfiniteScroll>
         </IonContent>
       </IonPage>
     );
