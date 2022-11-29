@@ -1,5 +1,5 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
-import { IonReactHashRouter, IonReactRouter } from "@ionic/react-router";
+import { IonReactHashRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 import Home from "./pages/Home";
 
@@ -27,9 +27,9 @@ import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import PrivateRoute from "./components/PrivateRoute";
+import Content from "./pages/Content";
 import Login from "./pages/Login";
 import store from "./store";
-import Content from "./pages/Content";
 
 setupIonicReact();
 

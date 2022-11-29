@@ -6,15 +6,13 @@ import {
   IonContent,
   IonHeader,
   IonInfiniteScroll,
-  IonInfiniteScrollContent,
-  IonItem,
-  IonList,
+  IonInfiniteScrollContent, IonList,
   IonPage,
   IonRefresher,
   IonRefresherContent,
   IonTitle,
   IonToolbar,
-  RefresherEventDetail,
+  RefresherEventDetail
 } from "@ionic/react";
 import { MinifluxClient } from "../api";
 import { Entry, GetEntriesOptions } from "../api/miniflux";
