@@ -5,14 +5,16 @@ import {
   IonCardTitle,
   IonContent,
   IonHeader,
+  IonImg,
   IonInfiniteScroll,
-  IonInfiniteScrollContent, IonList,
+  IonInfiniteScrollContent,
+  IonList,
   IonPage,
   IonRefresher,
   IonRefresherContent,
   IonTitle,
   IonToolbar,
-  RefresherEventDetail
+  RefresherEventDetail,
 } from "@ionic/react";
 import { MinifluxClient } from "../api";
 import { Entry, GetEntriesOptions } from "../api/miniflux";
@@ -21,6 +23,7 @@ import store, { appConnect } from "../store";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { fillContent } from "../store/features/content";
+import { getImageLink } from "../utils/getImageLink";
 
 export interface IHomeProps extends RouteComponentProps {
   credential: {
@@ -32,6 +35,7 @@ export interface IHomeProps extends RouteComponentProps {
 export interface IHomeState {
   entryCount: number;
   entries: Array<Entry>;
+  markedIds: Array<number>;
 }
 
 class Home extends React.Component<IHomeProps, IHomeState> {
@@ -42,6 +46,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     this.state = {
       entryCount: 0,
       entries: [],
+      markedIds: [],
     };
     this._client = new MinifluxClient(this.props.credential);
   }
@@ -63,10 +68,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     }
 
     const data = await this._client.entires(options);
-    const newEntries = data.entries.map((item) => ({
-      ...item,
-      __marked__: false,
-    }));
+    const newEntries = data.entries;
     const entries =
       replace === true ? newEntries : [...this.state.entries, ...newEntries];
 
@@ -77,12 +79,10 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     if (this.state.entries.length > 0) {
       // TODO: send toast tell user those has been marked as read
       const entry_ids = this.state.entries
-        .filter((item) => (item as any).__marked__ !== true)
-        .map((item) => {
-          (item as any).__marked__ = true;
-          return item?.id;
-        })
+        .filter((item) => !this.state.markedIds.includes(item.id))
+        .map((item) => item?.id)
         .filter((id) => id !== undefined) as any as Array<number>;
+      this.setState({ markedIds: [...this.state.markedIds, ...entry_ids] });
       await this._client.update({ entry_ids, status: "read" });
     }
     await this._appendEntries();
@@ -99,6 +99,12 @@ class Home extends React.Component<IHomeProps, IHomeState> {
         }}
       >
         <IonCardHeader>
+          <IonImg
+            src={getImageLink(entry.content)}
+            onIonError={(e) => {
+              e.target.remove();
+            }}
+          ></IonImg>
           <IonCardTitle>{entry.title}</IonCardTitle>
           <IonCardSubtitle>{entry.author}</IonCardSubtitle>
         </IonCardHeader>
