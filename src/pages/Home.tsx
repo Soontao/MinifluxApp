@@ -40,6 +40,7 @@ export interface IHomeState {
 
 class Home extends React.Component<IHomeProps, IHomeState> {
   private _client: MinifluxClient;
+  private _failedImgHost: Set<string>;
 
   constructor(props: IHomeProps) {
     super(props);
@@ -49,6 +50,8 @@ class Home extends React.Component<IHomeProps, IHomeState> {
       markedIds: [],
     };
     this._client = new MinifluxClient(this.props.credential);
+
+    this._failedImgHost = new Set();
   }
 
   componentDidMount() {
@@ -88,6 +91,29 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     await this._appendEntries();
   }
 
+  private _buildImage(entry: Entry) {
+    const imgLink = getImageLink(entry.content);
+    if (imgLink === undefined) {
+      return;
+    }
+    const u = new URL(imgLink);
+    if (this._failedImgHost.has(u.hostname)) {
+      return;
+    }
+    return (
+      <IonImg
+        src={imgLink}
+        onIonError={(e) => {
+          try {
+            const u = new URL(e.target.src!);
+            this._failedImgHost.add(u.hostname);
+            e.target.hidden = true
+          } catch {}
+        }}
+      ></IonImg>
+    );
+  }
+
   private _buildCard(index: number, entry: Entry) {
     return (
       <IonCard
@@ -98,12 +124,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
           this.props.history.push("/content");
         }}
       >
-        <IonImg
-          src={getImageLink(entry.content)}
-          onIonError={(e) => {
-            e.target.remove();
-          }}
-        ></IonImg>
+        {this._buildImage(entry)}
         <IonCardHeader>
           <IonCardTitle>{entry.title}</IonCardTitle>
           <IonCardSubtitle>{entry.author}</IonCardSubtitle>
