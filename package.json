@@ -7,7 +7,7 @@
     "@capacitor/core": "4.5.0",
     "@capacitor/haptics": "4.1.0",
     "@capacitor/keyboard": "4.1.0",
-    "@capacitor/status-bar": "4.1.0",
+    "@capacitor/status-bar": "4.1.1",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
     "@reduxjs/toolkit": "^1.9.0",
